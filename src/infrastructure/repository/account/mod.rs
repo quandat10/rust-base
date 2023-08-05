@@ -4,23 +4,18 @@ use std::error::Error;
 
 pub mod structure;
 
-use crate::{application::repository::RepositoryAbstract, domain::account::Account};
+use crate::{
+    application::repository::{account::AccountRepository, RepositoryAbstract},
+    domain::account::Account,
+};
 
-use self::structure::CreateAccount;
-
-pub struct AccountRespository {
+pub struct AccountRespositoryInDB {
     db: Pool<Postgres>,
 }
 
-impl AccountRespository {
-    pub async fn get_by_code(code: String) -> Result<(), Box<dyn Error>> {
-        Ok(())
-    }
-}
-
 #[async_trait]
-impl RepositoryAbstract<Account, CreateAccount> for AccountRespository {
-    async fn create(&self, account: CreateAccount) -> Result<Account, Box<dyn Error>> {
+impl AccountRepository for AccountRespositoryInDB {
+    async fn create(&self, account: Account) -> Result<Account, Box<dyn Error>> {
         let email = account.email;
         let name: String = account.name;
         let password = account.password;

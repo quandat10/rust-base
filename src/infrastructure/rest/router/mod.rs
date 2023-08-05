@@ -12,15 +12,6 @@ use self::health_check::health_checker_handler;
 
 pub mod health_check;
 
-pub struct Cat {
-    pub name: String,
-}
-impl Cat {
-    pub fn new(name: String) -> Self {
-        Self { name }
-    }
-}
-
 pub fn router(app_state: Arc<AppState>) -> Router {
     Router::new()
         .merge(Router::new().nest(
