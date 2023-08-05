@@ -4,8 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE
   "accounts" (
-    id serial PRIMARY KEY,
-    code UUID UNIQUE NOT NULL DEFAULT (uuid_generate_v4()),
+    id UUID PRIMARY KEY DEFAULT (uuid_generate_v4()),
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(255) UNIQUE,
