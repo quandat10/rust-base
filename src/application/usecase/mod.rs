@@ -1,1 +1,1 @@
-pub mod account;
+pub struct AccountUseCase<R:>

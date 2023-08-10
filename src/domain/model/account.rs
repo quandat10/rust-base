@@ -18,28 +18,18 @@ pub struct Account {
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
-impl Account {
-    pub fn new(
-        id: Option<Uuid>,
-        name: String,
-        phone: Option<String>,
-        email: String,
-        verified: Option<bool>,
-        password: String,
-        role: Option<String>,
-        updated_at: Option<chrono::DateTime<chrono::Utc>>,
-        created_at: Option<chrono::DateTime<chrono::Utc>>,
-    ) -> Self {
-        Account {
-            id,
+pub struct NewAccount {
+    pub name: String,
+    pub email: String,
+    pub password: String,
+}
+
+impl NewAccount {
+    pub fn new(name: String, email: String, password: String) -> Self {
+        NewAccount {
             name,
-            phone,
             email,
-            verified,
             password,
-            role,
-            updated_at,
-            created_at,
         }
     }
 }
