@@ -1,45 +1,33 @@
-use crate::infrastructure::{
-    config::Config,
-    repository::database::{posgresql::postgresql_conn, redis::redis_conn},
-};
-use dotenv::dotenv;
-use redis::Client;
-use sqlx::{Pool, Postgres};
-use std::sync::Arc;
-use tracing::info;
+use crate::domain::{model::account::Account, repository::account::AccountRepository};
 
-use self::rest::router::router;
-use std::net::SocketAddr;
+use self::{database::posgresql::DB, repository::DatabaseRepositoryImpl};
 
 pub mod config;
+pub mod database;
 pub mod repository;
-pub mod rest;
 
-pub struct AppState {
-    db: Pool<Postgres>,
-    env: Config,
-    redis: Client,
+pub struct RepositoriesModule {
+    account_repository: DatabaseRepositoryImpl<Account>,
 }
 
-pub async fn server() {
-    tracing_subscriber::fmt::init();
+pub trait RepositoriesModuleExt {
+    type AccountRepo: AccountRepository;
 
-    dotenv().ok();
-    let config = Config::init();
-    let port: u16 = config.port.to_owned();
+    fn account_repository(&self) -> &Self::AccountRepo;
+}
 
-    let app_state = Arc::new(AppState {
-        db: postgresql_conn(config.database_url.to_owned()).await,
-        redis: redis_conn(config.redis_url.to_owned()).await,
-        env: config,
-    });
+impl RepositoriesModuleExt for RepositoriesModule {
+    type AccountRepo = DatabaseRepositoryImpl<Account>;
 
-    let address: SocketAddr = SocketAddr::from(([127, 0, 0, 1], port));
+    fn account_repository(&self) -> &Self::AccountRepo {
+        &self.account_repository
+    }
+}
 
-    info!("🚀 Server started successfully, listening on {}", &address);
+impl RepositoriesModule {
+    pub fn new(db: DB) -> Self {
+        let account_repository = DatabaseRepositoryImpl::new(db);
 
-    axum::Server::bind(&address)
-        .serve(router(app_state).into_make_service())
-        .await
-        .expect("Failed to start server")
+        Self { account_repository }
+    }
 }
